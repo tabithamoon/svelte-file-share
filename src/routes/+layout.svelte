@@ -2,4 +2,7 @@
     import "../app.css";
 </script>
 
-<slot />
+
+<div class="flex h-screen text-white bg-slate-800">
+    <slot />
+</div>
