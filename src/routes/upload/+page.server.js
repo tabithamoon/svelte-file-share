@@ -53,7 +53,5 @@ export const actions = {
                 message: 'Failed to set login token.'
             })
         }
-        
-        redirect(307, '/upload')
     }
 }
