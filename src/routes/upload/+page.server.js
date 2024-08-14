@@ -1,4 +1,5 @@
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { v4 as uuid } from 'uuid';
 
 function bail(cookies) {
     cookies.delete('login', { path: '/' });
@@ -33,7 +34,7 @@ export const actions = {
                 message: 'Secret is not valid.'
             });
 
-        const token = self.crypto.randomUUID();
+        const token = uuid();
         const timestamp = new Date();
 
         try {
