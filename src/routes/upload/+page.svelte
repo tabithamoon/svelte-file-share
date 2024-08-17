@@ -14,13 +14,15 @@
             else {
                 console.log("direct upload");
 
+                const headers = new Headers();
+                headers.append("Authorization", token)
+                headers.append("X-File-Name", "1d/" + file.name)
+                headers.append("X-Upload-Action: direct")
+
                 const result = await fetch('/api/upload', {
                     method: 'PUT',
                     body: file,
-                    headers: new Headers()
-                        .append("Authorization", token)
-                        .append("X-File-Name", "1d/" + file.name)
-                        .append("X-Upload-Action: direct")
+                    headers: headers
                 });
 
                 console.log(result);
