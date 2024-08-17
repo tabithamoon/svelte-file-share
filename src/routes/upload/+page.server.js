@@ -10,6 +10,8 @@ export async function load({ cookies, platform }) {
     const token = cookies.get('login');
 
     if (token === undefined || token !== secret) bail(cookies)
+
+    return { token: token }
 }
 
 export const actions = {
