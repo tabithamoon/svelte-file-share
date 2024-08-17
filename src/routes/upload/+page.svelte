@@ -15,9 +15,9 @@
                 console.log("direct upload");
 
                 const headers = new Headers();
-                headers.append("Authorization", token)
-                headers.append("X-File-Name", "1d/" + file.name)
-                headers.append("X-Upload-Action: direct")
+                headers.append("Authorization", token);
+                headers.append("X-File-Name", "1d/" + file.name);
+                headers.append("X-Upload-Action", "direct");
 
                 const result = await fetch('/api/upload', {
                     method: 'PUT',
