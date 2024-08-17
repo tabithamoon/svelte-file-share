@@ -40,9 +40,9 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 
 # Bind a KV Namespace. Use KV as persistent storage for small key-value pairs.
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#kv-namespaces
-[[kv_namespaces]]
-binding = "LOGIN_TOKENS"
-id = "f7f163ccbc3d4e429fee9fc32d1b28e2"
+# [[kv_namespaces]]
+# binding = "LOGIN_TOKENS"
+# id = "f7f163ccbc3d4e429fee9fc32d1b28e2"
 
 # Bind a Queue producer. Use this binding to schedule an arbitrary task that may be processed later by a Queue consumer.
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#queue-producers
@@ -52,9 +52,9 @@ id = "f7f163ccbc3d4e429fee9fc32d1b28e2"
 
 # Bind an R2 Bucket. Use R2 to store arbitrarily large blobs of data, such as files.
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#r2-buckets
-# [[r2_buckets]]
-# binding = "MY_BUCKET"
-# bucket_name = "my-bucket"
+[[r2_buckets]]
+binding = "MAIN_BUCKET"
+bucket_name = "tabbynet-files"
 
 # Bind another Worker service. Use this binding to call another Worker without network overhead.
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#service-bindings
