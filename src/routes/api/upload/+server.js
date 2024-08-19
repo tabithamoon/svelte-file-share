@@ -37,6 +37,20 @@ export async function POST({ request, platform }) {
                 )
             }
 
+        case 'complete':
+            try {
+                const uploadId = request.headers.get("x-upload-id");
+                const mpUpload = await bucket.resumeMultipartUpload(fileName, uploadId);
+
+                await mpUpload.complete(JSON.parse(request.body))
+            }
+            catch {
+                return (
+                    { error: true, message: 'Failed to complete multipart upload.' },
+                    { status: 500 }
+                );
+            }
+
         default:
             return json(
                 { error: true, message: 'Action not provided'}, 
@@ -70,12 +84,26 @@ export async function PUT({ request, platform }) {
         case 'direct':
             try {
                 console.log(await bucket.put(fileName, request.body));
-                return json({ error: false, message: 'Success' })
+                return json({ error: false, message: 'Success' });
             } catch {
                 return json(
                     { error: true, message: 'Failed to upload file.' },
                     { status: 500 }
-                )
+                );
+            }
+        
+        case 'add-part':
+            try {
+                const uploadId = request.headers.get("x-upload-id");
+                const partNumber = request.headers.get("x-upload-part");
+
+                const mpUpload = await bucket.resumeMultipartUpload(fileName, uploadId)
+                return json(await mpUpload.uploadPart(partNumber, request.body));
+            } catch {
+                return json(
+                    { error: true, message: 'Failed to upload part'},
+                    { status: 500 }
+                );
             }
 
         default:
