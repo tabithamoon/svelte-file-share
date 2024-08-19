@@ -5,7 +5,7 @@
     const uploadFiles = async () => {
         const chunkSize = 100663296 // 96MB (in bytes)
         const token = data.token
-
+        debugger;
         for (const file of files) {
             console.log(file);
             if (file.size > chunkSize) {
