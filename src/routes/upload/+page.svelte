@@ -12,7 +12,7 @@
                 console.log("chunked upload");
                 
                 let start = 0;
-                let partNumber = 0;
+                let partNumber = 1;
                 let upload = undefined;
                 const headers = new Headers();
 
