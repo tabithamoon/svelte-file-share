@@ -30,7 +30,8 @@ export async function POST({ request, platform }) {
                     }
                 )
             }
-            catch {
+            catch (e) {
+                console.error(e);
                 return json(
                     { error: true, message: 'Failed to create bucket upload.' },
                     { status: 500 }
@@ -44,7 +45,8 @@ export async function POST({ request, platform }) {
 
                 await mpUpload.complete(JSON.parse(request.body))
             }
-            catch {
+            catch (e) {
+                console.error(e)
                 return (
                     { error: true, message: 'Failed to complete multipart upload.' },
                     { status: 500 }
@@ -83,9 +85,9 @@ export async function PUT({ request, platform }) {
     switch (action) {
         case 'direct':
             try {
-                console.log(await bucket.put(fileName, request.body));
-                return json({ error: false, message: 'Success' });
-            } catch {
+                return json(await bucket.put(fileName, request.body));
+            } catch (e) {
+                console.error(e)
                 return json(
                     { error: true, message: 'Failed to upload file.' },
                     { status: 500 }
@@ -99,7 +101,8 @@ export async function PUT({ request, platform }) {
 
                 const mpUpload = await bucket.resumeMultipartUpload(fileName, uploadId)
                 return json(await mpUpload.uploadPart(partNumber, request.body));
-            } catch {
+            } catch (e) {
+                console.error(e)
                 return json(
                     { error: true, message: 'Failed to upload part'},
                     { status: 500 }
