@@ -46,9 +46,8 @@ export async function POST({ request, platform }) {
                         command.name, {
                             customMetadata: {
                                 "uploaderIp": command.address,
-                                "uploadDate": new Date().toISOString(),
                                 "expiryDate": command.expiry,
-                                "guest": "false" //TODO: implement guest links
+                                "guest": "false"
                             }
                         }
                     ),
@@ -137,9 +136,8 @@ export async function PUT({ request, platform, event }) {
                             // Add info about the upload attached to object itself
                             customMetadata: {
                                 "uploaderIp": command.address,
-                                "uploadDate": new Date().toISOString(),
                                 "expiryDate": command.expiry,
-                                "guest": "false" // TODO: implement guest links
+                                "guest": "false"
                             }
                         }
                     ),
