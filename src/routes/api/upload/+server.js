@@ -86,7 +86,7 @@ export async function POST({ request, platform }) {
     }
 }
 
-export async function PUT({ request, platform, event }) {
+export async function PUT({ request, platform }) {
     // Debug flag
     const debug = true;
 
