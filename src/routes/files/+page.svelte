@@ -19,7 +19,7 @@
     // Function to call API to delete files
     const deleteFile = async (key) => {
         // Prompt for confirmation
-        if(!prompt(`Are you sure you want to delete ${key}?`)) return;
+        if(!confirm(`Are you sure you want to delete ${key}?`)) return;
 
         if (debug) console.log(`Deleting file ${key}`);
 
@@ -44,7 +44,21 @@
             // else, refresh page
             location.reload();
         }
-    }
+    };
+
+    const copyLink = (event) => {
+        // Grab file name from button label
+        const oldLabel = event.target.innerText;
+
+        if (debug) console.log(oldLabel);
+
+        // Push link to clipboard and display "Copied!" message
+        navigator.clipboard.writeText(`https://files.tabbynet.com/${oldLabel}`);
+        event.target.innerText = "Copied!";
+
+        // Reset variable and hide the text after 2 seconds
+        setTimeout(() => {event.target.innerText = oldLabel;}, 2000);
+    };
 </script>
 
 <div class="flex flex-col m-auto text-center">
@@ -62,7 +76,7 @@
             {#each data.files as { key, size, expiry, guest, ip }, i}
                 <tr class="border border-slate-950">
                     <td class="px-8">
-                        <p>{key}</p>
+                        <button on:click={copyLink}>{key}</button>
                     </td>
                     <td class="px-8">
                         <p>{shortenBytes(size)}</p>
@@ -82,6 +96,7 @@
                 </tr>
             {/each}
         </table>
+        <p class="ml-auto text-sm italic text-slate-500">hint: click on a file name to copy a link to it!</p>
     {:else}
         <p class="mb-4 text-sm italic text-slate-500">There are no files. Upload something!</p>
     {/if}
