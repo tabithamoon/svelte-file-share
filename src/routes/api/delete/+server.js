@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 
 export async function DELETE({ request, platform }) {
     // Debug flag
