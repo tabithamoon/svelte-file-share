@@ -1,3 +1,5 @@
+import { error } from '@sveltejs/kit';
+
 export async function load({ platform, params }) {
     // Get Cloudflare bindings
     const kv = platform.env.GUEST_KEYS;
@@ -9,19 +11,15 @@ export async function load({ platform, params }) {
     let guest = kv.get(key);
 
     // Kick them out if the key is invalid
-    if (guest == null) {
-        return {
-            error: true,
-            message: "Guest key is invalid."
-        };
-    }
+    if (guest == null) return error(401, 'Unauthorized');
 
     // Parse key JSON
     guest = JSON.parse(guest);
 
     // Return guest data
-    return guest.map(x => ({
-        maxUploads: x.maxUploads,
-        expiry: x.expiry,        
-    }));
+    return {
+        token: params.key,
+        maxUploads: guest.maxUploads,
+        expiry: guest.expiry
+    };
 }
