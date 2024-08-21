@@ -65,7 +65,7 @@
 
                 // Create a multipart upload
                 response = await axios.post(
-                    "/api/upload",
+                    "/api/guest/upload",
                     null,
                     {
                         headers: headers
@@ -100,7 +100,7 @@
 
                     // Upload chunk request
                     response = await axios.put(
-                        '/api/upload',
+                        '/api/guest/upload',
                         file.slice(offset, offset + chunkSize),
                         {
                             headers: headers,
@@ -127,7 +127,7 @@
 
                 // Complete multipart upload
                 response = await axios.post(
-                    '/api/upload',
+                    '/api/guest/upload',
                     partsList,
                     {
                         headers: headers
@@ -152,7 +152,7 @@
 
                 // Make upload
                 response = await axios.put(
-                    "/api/upload",
+                    "/api/guest/upload",
                     file,
                     {
                         headers: headers,
