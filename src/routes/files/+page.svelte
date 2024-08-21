@@ -97,6 +97,6 @@
         </table>
         <p class="ml-auto text-sm italic text-slate-500">hint: click on a file name to copy a link to it!</p>
     {:else}
-        <p class="mb-4 text-sm italic text-slate-500">There are no files. Upload something!</p>
+        <p class="mb-4 italic text-slate-500">There are no files. Upload something!</p>
     {/if}
 </div>
