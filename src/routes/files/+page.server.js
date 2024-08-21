@@ -16,6 +16,7 @@ export async function load({ cookies, platform }) {
     if (token === undefined || token !== secret) bail(cookies);
 
     const files = await bucket.list();
+    console.log(files);
     const fileList = files.objects.map(x => ({
         key: x.key,
         size: x.size,
