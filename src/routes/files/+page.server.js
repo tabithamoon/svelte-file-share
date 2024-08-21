@@ -15,8 +15,7 @@ export async function load({ cookies, platform }) {
     // Kick out if password token wrong or missing
     if (token === undefined || token !== secret) bail(cookies);
 
-    const files = await bucket.list();
-    console.log(files);
+    const files = await bucket.list({ include: ['customMetadata'] });
     const fileList = files.objects.map(x => ({
         key: x.key,
         size: x.size,
