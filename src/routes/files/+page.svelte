@@ -5,6 +5,7 @@
     import axios from 'axios';
 
     export let data;                    // data from backend
+    const debug = true;                 // Debug flag
 
     // Function to format file sizes
     // Credit to https://stackoverflow.com/a/42408230
@@ -17,7 +18,10 @@
 
     // Function to call API to delete files
     const deleteFile = async (key) => {
-        console.log(`Deleting file ${key}`);
+        // Prompt for confirmation
+        if(!prompt(`Are you sure you want to delete ${key}?`)) return;
+
+        if (debug) console.log(`Deleting file ${key}`);
 
         // Send deletion request
         const response = await axios.delete(
@@ -29,6 +33,8 @@
                 },
             }
         );
+
+        if (debug) console.log(response);
 
         // If status !== OK, alert
         if(response.status !== 200) {
@@ -44,6 +50,15 @@
 <div class="flex flex-col m-auto text-center">
     {#if data.files.length > 0}
         <table class="border border-slate-950 bg-slate-700">
+            <tr class="font-semibold border bg-slate-600 border-slate-950">
+                <th class="px-8">Name</th>
+                <th class="px-8">Size</th>
+                <th class="px-8">Expiry</th>
+                <th class="px-8">Uploader IP</th>
+                <th class="px-8">Guest upload</th>
+                <th></th>
+                <th></th>
+            </tr>
             {#each data.files as { key, size, expiry, guest, ip }, i}
                 <tr class="border border-slate-950">
                     <td class="px-8">
