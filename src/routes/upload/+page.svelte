@@ -1,17 +1,26 @@
+<title>tabbynet files - upload</title>
+
 <script>
     // Imports
 	import axios from 'axios';
 
     let files;                          // selected files to upload
     export let data;                    // data from backend
-    export let uploadProgress;          // user facing upload progress percentage
+    const debug = true;                 // Enable debug logging in console
+    let uploadProgress;                 // user facing upload progress percentage
+    let currentFile = "";               // current file being uploaded
+    let uploading = false;              // upload state
+    let textCopied = false;             // Show or hide the "Copied!" message
+    let uploadFinished = false;         // Set when all files finished upload
 
     // Main upload function
     const uploadFiles = async () => {
+        // Set uploading flag for UI
+        uploading = true;
+
         // Static vars
         const chunkSize = 100663296;    // 96MB (in bytes)
         const token = data.token;       // Auth token (from cookies)
-        const debug = true;             // Enable debug logging in console
         
         // A unified "response" variable, for API requests
         let response = undefined;
@@ -31,6 +40,9 @@
         // Iterate over every selected file
         for (const file of files) {
             if (debug) console.log(file);
+
+            // Set currently uploading file for UI
+            currentFile = file.name;
 
             // Set file name for this upload
             headers["X-File-Name"] = file.name;
@@ -59,7 +71,7 @@
 
                 // Discard rest of response info to simplify
                 response = response.data;
-                if (debug) console.log(`Multipart upload created: ${response}`);
+                if (debug) console.log(`Multipart upload created: ${response.uploadId}`);
 
                 
                 headers["X-Upload-Action"] = "add-part"; // Set upload action to add part to chunked upload
@@ -153,10 +165,84 @@
             }
         }
 
-        // TODO: (better) user UI confirmation
-        alert("upload success!");
-    }
+        // Set upload finished flag
+        uploadFinished = true;        
+    };
+
+    // Function to open hidden file picker input
+    const openFilePicker = () => {
+        if (debug) console.log("Opening file picker");
+        document.getElementById("filePicker").click();
+    };
+
+    // Function to reset variables after uploads completed
+    const resetPage = () => {
+        if (debug) console.log("Resetting page");
+        uploadFinished = false;
+        uploading = false;
+        files = undefined;
+    };
+
+    const copyLink = (fileName) => {
+        if (debug) console.log(fileName);
+        // Push link to clipboard and display "Copied!" message
+        navigator.clipboard.writeText(`https://files.tabbynet.com/${fileName}`);
+        textCopied = true;
+
+        // Reset variable and hide the text after 2 seconds
+        setTimeout(() => {textCopied = false;}, 2000);
+    };
 </script>
 
-<input type="file" bind:files on:change={uploadFiles}/>
-<p>{uploadProgress}</p>
+<div class="flex flex-col m-auto text-center">
+    {#if !uploading} <!-- Show file picker UI if not uploading-->
+        <input id="filePicker" type="file" bind:files class="hidden" multiple/>
+        
+        {#if files}
+            <table class="border border-slate-950 bg-slate-700">
+                <tr class="font-semibold bg-slate-600">
+                    <th>Name</th>
+                    <th>Size</th>
+                </tr>
+                {#each files as { name, size }, i}
+                    <tr class="border border-slate-950">
+                        <td class="px-8">{name}</td>
+                        <td class="px-8">{size}</td>
+                    </tr>
+                {/each}
+            </table>
+            <div class="flex mt-4">
+                <button class="px-2 mr-auto rounded-lg border border-slate-950 bg-slate-700" on:click={openFilePicker}>Reselect files</button>
+                <button class="px-2 ml-4 rounded-lg border border-slate-950 bg-slate-700" on:click={uploadFiles}>Upload</button>
+            </div>
+            
+        {:else}
+            <button class="px-2 w-60 rounded-lg border border-slate-950 bg-slate-700" on:click={openFilePicker}>Select files</button>
+        {/if}
+    {:else if !uploadFinished} <!-- Hide everything and only show upload progress if uploading -->
+        <p>Uploading file: {currentFile}</p>
+        <div class="overflow-hidden p-1 rounded-lg bg-slate-700">
+            <div class="flex relative justify-center items-center h-6">
+                <div class="relative text-sm font-medium text-white">{uploadProgress}%</div>
+            </div>
+        </div>
+    {:else} <!-- Show share links when upload completed-->
+        <p class="text-xl">Upload completed!</p>
+        {#if textCopied}
+            <p class="mb-4 text-sm italic text-green-500">Copied!</p>
+        {:else}
+            <p class="mb-4 text-sm italic text-slate-500">Click to copy to clipboard</p>
+        {/if}
+        
+        <table class="border border-slate-950 bg-slate-700">
+            {#each files as { name }, i}
+                <tr class="border border-slate-950">
+                    <td class="px-8">
+                        <button on:click={copyLink(name)}>https://files.tabbynet.com/{name}</button>
+                    </td>
+                </tr>
+            {/each}
+        </table>
+        <button class="px-2 mt-4 mr-auto rounded-lg border border-slate-950 bg-slate-700" on:click={resetPage}>Go back</button>
+    {/if}
+</div>
