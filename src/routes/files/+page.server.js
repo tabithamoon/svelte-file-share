@@ -24,7 +24,5 @@ export async function load({ cookies, platform }) {
         expiry: x.customMetadata.expiryDate
     }));
 
-    console.log(fileList);
-
     return { token: token, files: fileList };
 }

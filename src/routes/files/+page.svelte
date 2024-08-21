@@ -71,7 +71,6 @@
                 <th class="px-8">Uploader IP</th>
                 <th class="px-8">Guest upload</th>
                 <th></th>
-                <th></th>
             </tr>
             {#each data.files as { key, size, expiry, guest, ip }, i}
                 <tr class="border border-slate-950">
