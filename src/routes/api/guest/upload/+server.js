@@ -21,7 +21,7 @@ export async function POST({ request, platform }) {
     if (debug) console.log(command);
     
     // Get guest link info
-    const rawGuest = kv.get(command.token);
+    const rawGuest = await kv.get(command.token);
 
     // Bail if guest does not exist
     if (rawGuest === null) {
@@ -74,9 +74,9 @@ export async function POST({ request, platform }) {
                 const bucketResponse = await upload.complete(await request.json())
 
                 guest.uploads--;
-                if(guest.uploads == 0) kv.delete(command.token);
+                if(guest.uploads == 0) await kv.delete(command.token);
                 else {
-                    kv.put(
+                    await kv.put(
                         command.token,
                         JSON.stringify(guest),
                         { expiration: guest.expiry }
@@ -125,7 +125,7 @@ export async function PUT({ request, platform }) {
     if (debug) console.log(command);
 
     // Get guest link info
-    const rawGuest = kv.get(command.token);
+    const rawGuest = await kv.get(command.token);
 
     // Bail if guest does not exist
     if (rawGuest === null) {
@@ -165,7 +165,7 @@ export async function PUT({ request, platform }) {
                 );
 
                 guest.uploads--;
-                if(guest.uploads == 0) kv.delete(command.token);
+                if(guest.uploads == 0) await kv.delete(command.token);
                 else {
                     kv.put(
                         command.token,

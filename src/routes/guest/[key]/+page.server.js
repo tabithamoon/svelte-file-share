@@ -8,7 +8,7 @@ export async function load({ platform, params }) {
     const key = params.key;
 
     // Try to get guest details
-    let guest = kv.get(key);
+    let guest = await kv.get(key);
 
     // Kick them out if the key is invalid
     if (guest == null) return error(401, 'Unauthorized');
