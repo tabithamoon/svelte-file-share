@@ -13,6 +13,15 @@
     let textCopied = false;             // Show or hide the "Copied!" message
     let uploadFinished = false;         // Set when all files finished upload
 
+    // Function to format file sizes
+    // Credit to https://stackoverflow.com/a/42408230
+    function shortenBytes(n) {
+        const k = n > 0 ? Math.floor((Math.log2(n)/10)) : 0;
+        const rank = (k > 0 ? 'KMGT'[k - 1] : '') + 'iB';
+        const count = Math.floor(n / Math.pow(1024, k));
+        return count + rank;
+    }
+
     // Main upload function
     const uploadFiles = async () => {
         // Set uploading flag for UI
@@ -207,7 +216,7 @@
                 {#each files as { name, size }, i}
                     <tr class="border border-slate-950">
                         <td class="px-8">{name}</td>
-                        <td class="px-8">{size}</td>
+                        <td class="px-8">{shortenBytes(size)}</td>
                     </tr>
                 {/each}
             </table>
