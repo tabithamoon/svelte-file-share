@@ -11,6 +11,7 @@ export async function load({ cookies, platform }) {
     const kv = platform.env.GUEST_KEYS;
     const secret = platform.env.SECRET;
     const token = cookies.get('login');
+    const debug = true;
 
     // Kick out if password token wrong or missing
     if (token === undefined || token !== secret) bail(cookies);
@@ -21,8 +22,11 @@ export async function load({ cookies, platform }) {
     // Create array to hold link details
     let links = [];
 
+    if (debug) console.log(keys);
+
     // Get info for each key and append to array
     for (const key of keys.keys) {
+        if (debug) console.log(key);
         const link = JSON.parse(await kv.get(key.name))
         link["key"] = key.name;
         links.push(link);
