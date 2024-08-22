@@ -4,8 +4,6 @@ export function load({ cookies, url }) {
     const login = cookies.get('login');
     const logout = url.searchParams.get('logout');
 
-    console.log(logout)
-
     if (logout != null) {
         cookies.set('login', '', {
             path: '/',
