@@ -15,11 +15,12 @@ export async function load({ platform, params }) {
 
     // Parse key JSON
     guest = JSON.parse(guest);
+    console.log(guest);
 
     // Return guest data
     return {
         token: params.key,
-        maxUploads: guest.maxUploads,
+        uploads: guest.uploads,
         expiry: guest.expiry
     };
 }

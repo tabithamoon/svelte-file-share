@@ -13,6 +13,8 @@
     let textCopied = false;             // Show or hide the "Copied!" message
     let uploadFinished = false;         // Set when all files finished upload
 
+    if (debug) console.log(data);
+
     // Function to format file sizes
     // Credit to https://stackoverflow.com/a/42408230
     function shortenBytes(n) {
@@ -187,9 +189,7 @@
     // Function to reset variables after uploads completed
     const resetPage = () => {
         if (debug) console.log("Resetting page");
-        uploadFinished = false;
-        uploading = false;
-        files = undefined;
+        location.reload();
     };
 
     const copyLink = (fileName) => {
@@ -226,7 +226,9 @@
             </div>
             
         {:else}
-            <button class="px-2 w-60 rounded-lg border border-slate-950 bg-slate-700" on:click={openFilePicker}>Select files</button>
+            <button class="px-2 mx-auto w-60 rounded-lg border border-slate-950 bg-slate-700" on:click={openFilePicker}>Select files</button>
+            <p class="text-sm italic text-slate-500">Expiration: {new Date(data.expiry * 1000).toString()}</p>
+            <p class="text-sm italic text-slate-500">Uploads left: {data.uploads}</p>
         {/if}
     {:else if !uploadFinished} <!-- Hide everything and only show upload progress if uploading -->
         <p>Uploading file: {currentFile}</p>
@@ -255,3 +257,5 @@
         <button class="px-2 mt-4 mr-auto rounded-lg border border-slate-950 bg-slate-700" on:click={resetPage}>Go back</button>
     {/if}
 </div>
+
+<p class="absolute right-4 bottom-4 text-sm italic text-slate-500">guest link</p>
