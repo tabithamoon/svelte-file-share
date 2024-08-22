@@ -233,7 +233,7 @@
             
         {:else}
             <button class="px-2 mx-auto w-60 rounded-lg border border-slate-950 bg-slate-700" on:click={openFilePicker}>Select files</button>
-            <p class="text-sm italic text-slate-500">Expiration: {new Date(data.expiry * 1000).toString()}</p>
+            <p class="text-sm italic text-slate-500">Expiration: {new Date(data.expiry * 1000).toLocaleString()}</p>
             <p class="text-sm italic text-slate-500">Uploads left: {data.uploads}</p>
         {/if}
     {:else if !uploadFinished} <!-- Hide everything and only show upload progress if uploading -->
