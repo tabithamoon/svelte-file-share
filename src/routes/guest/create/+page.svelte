@@ -1,6 +1,7 @@
 <title>tabbynet files - create guest link</title>
 
 <script>
+    import Header from '../../../components/Header.svelte';
 	import axios from 'axios';
     const debug = true; // Debug flag
 
@@ -73,6 +74,8 @@
         setTimeout(() => {generatedLink = oldLink;}, 2000);
     }
 </script>
+
+<Header />
 
 <div class="flex flex-col m-auto text-center">
     {#if !generatedLink}

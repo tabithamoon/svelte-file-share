@@ -2,6 +2,7 @@
 
 <script>
     // Imports
+    import Header from '../../components/Header.svelte';
     import axios from 'axios';
 
     export let data;                    // data from backend
@@ -60,6 +61,8 @@
         setTimeout(() => {event.target.innerText = oldLabel;}, 2000);
     };
 </script>
+
+<Header />
 
 <div class="flex flex-col m-auto text-center">
     {#if data.files.length > 0}

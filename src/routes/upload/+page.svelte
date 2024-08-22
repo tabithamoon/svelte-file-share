@@ -2,6 +2,7 @@
 
 <script>
     // Imports
+    import Header from '../../components/Header.svelte';
 	import axios from 'axios';
 
     let files;                          // selected files to upload
@@ -202,6 +203,8 @@
         setTimeout(() => {textCopied = false;}, 2000);
     };
 </script>
+
+<Header />
 
 <div class="flex flex-col m-auto text-center">
     {#if !uploading} <!-- Show file picker UI if not uploading-->
