@@ -6,6 +6,7 @@
 	import axios from 'axios';
 
     let files;                          // selected files to upload
+    let expiryDate;                     // Store selected expiration date
     export let data;                    // data from backend
     const debug = true;                 // Enable debug logging in console
     let uploadProgress;                 // user facing upload progress percentage
@@ -35,16 +36,20 @@
         // A unified "response" variable, for API requests
         let response = undefined;
 
-        // TODO: stub, implement setting expiry date
-        let expiryDate = new Date();
-        expiryDate.setTime(expiryDate.getTime() + 86400000); // 1 day (in ms)
-        if (debug) console.log(`Upload expiry time: ${expiryDate.toISOString()}`);
+        // Pass "null" as is if expiration date is Never
+        if (expiryDate !== "null") {
+            // Calculate expiration date otherwise
+            const days = expiryDate;
+            expiryDate = new Date();
+            expiryDate.setTime(expiryDate.getTime() + (86400000 * days));
+            expiryDate = expiryDate.getTime();
+        }
 
         // Set some "unified" headers that are
         // shared between chunked and standard upload
         let headers = {
             "Authorization": token,
-            "X-Expire-Time": expiryDate.getTime()
+            "X-Expire-Time": expiryDate
         }
 
         // Iterate over every selected file
@@ -225,9 +230,17 @@
             </table>
             <div class="flex mt-4">
                 <button class="px-2 mr-auto rounded-lg border border-slate-950 bg-slate-700" on:click={openFilePicker}>Reselect files</button>
+                <p class="self-center mr-2 ml-8 text-sm italic text-slate-500">Expiry time</p>
+                <select class="px-2 rounded-lg border w-30 border-slate-950 bg-slate-700" bind:value={expiryDate}>
+                    <option value="1">1 day</option>
+                    <option value="7">7 days</option>
+                    <option value="14">14 days</option>
+                    <option value="30">30 days</option>
+                    <option value="90">90 days</option>
+                    <option value="null">Never</option>
+                </select>
                 <button class="px-2 ml-4 rounded-lg border border-slate-950 bg-slate-700" on:click={uploadFiles}>Upload</button>
             </div>
-            
         {:else}
             <button class="px-2 w-60 rounded-lg border border-slate-950 bg-slate-700" on:click={openFilePicker}>Select files</button>
         {/if}

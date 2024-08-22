@@ -8,6 +8,8 @@
     export let data;                    // data from backend
     const debug = true;                 // Debug flag
 
+    if (debug) console.log(data);
+
     // Function to format file sizes
     // Credit to https://stackoverflow.com/a/42408230
     function shortenBytes(n) {
@@ -84,7 +86,11 @@
                         <p>{shortenBytes(size)}</p>
                     </td>
                     <td class="px-8">
-                        <p>{expiry}</p>
+                        {#if expiry == "null"}
+                            <p>Never</p>
+                        {:else}
+                            <p>{new Date(+expiry).toLocaleString()}</p>
+                        {/if}
                     </td>
                     <td class="px-8">
                         {ip}
