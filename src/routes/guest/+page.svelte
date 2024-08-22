@@ -71,7 +71,7 @@
                 <th class="px-8">Remaining uses</th>
                 <th></th>
             </tr>
-            {#each data.links as { key, comment, uploads, expiry }}
+            <!-- {#each data.links as { key, comment, uploads, expiry }}
                 {#if key != null}
                     <tr class="border border-slate-950">
                         <td class="px-8">
@@ -91,7 +91,7 @@
                         </td>
                     </tr>
                 {/if}
-            {/each}
+            {/each} -->
         </table>
         <p class="ml-auto text-sm italic text-slate-500">hint: click on a file name to copy a link to it!</p>
     {:else}
