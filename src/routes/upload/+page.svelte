@@ -44,7 +44,7 @@
         // shared between chunked and standard upload
         let headers = {
             "Authorization": token,
-            "X-Expire-Time": expiryDate.toISOString()
+            "X-Expire-Time": expiryDate.getTime()
         }
 
         // Iterate over every selected file
