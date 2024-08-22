@@ -26,6 +26,12 @@
 
     // Main upload function
     const uploadFiles = async () => {
+        // Stop user if they're trying to upload more files than the link allows
+        if (files.length > data.uploads) {
+            alert(`You cannot upload that many files, your link only allows for up to ${data.uploads} uploads.`);
+            return;
+        }
+
         // Set uploading flag for UI
         uploading = true;
 
