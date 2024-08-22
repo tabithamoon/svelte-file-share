@@ -8,6 +8,8 @@
     export let data;        // data from backend
     const debug = true;     // debug flag
 
+    if (debug) console.log(data);
+
     // Function to redirect to create guest link
     function goToCreateLink() {
         location.href = '/guest/create';
@@ -60,7 +62,7 @@
 <Header />
 
 <div class="flex flex-col m-auto text-center">
-    {#if data.links.length > 0}
+    {#if data.links != null && data.links.length > 0}
         <table class="border border-slate-950 bg-slate-700">
             <tr class="font-semibold border bg-slate-600 border-slate-950">
                 <th class="px-8">Link ID</th>
@@ -70,23 +72,25 @@
                 <th></th>
             </tr>
             {#each data.links as { key, comment, uploads, expiry }}
-            <tr class="border border-slate-950">
-                <td class="px-8">
-                    <button on:click={copyLink}>{key}</button>
-                </td>
-                <td class="px-8">
-                    {comment}
-                </td>
-                <td class="px-8">
-                    {new Date(expiry * 1000).toLocaleString()}
-                </td>
-                <td class="px-8">
-                    {uploads}
-                </td>
-                <td class="px-8 bg-red-800">
-                    <button on:click={deleteLink(key)}>Delete</button>
-                </td>
-            </tr>
+                {#if key != null}
+                    <tr class="border border-slate-950">
+                        <td class="px-8">
+                            <button on:click={copyLink}>{key}</button>
+                        </td>
+                        <td class="px-8">
+                            {comment}
+                        </td>
+                        <td class="px-8">
+                            {new Date(expiry * 1000).toLocaleString()}
+                        </td>
+                        <td class="px-8">
+                            {uploads}
+                        </td>
+                        <td class="px-8 bg-red-800">
+                            <button on:click={deleteLink(key)}>Delete</button>
+                        </td>
+                    </tr>
+                {/if}
             {/each}
         </table>
         <p class="ml-auto text-sm italic text-slate-500">hint: click on a file name to copy a link to it!</p>
