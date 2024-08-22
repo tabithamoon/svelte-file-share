@@ -78,7 +78,7 @@
                     {comment}
                 </td>
                 <td class="px-8">
-                    {new Date(expiration * 1000).toISOString()}
+                    {new Date(expiration * 1000).toLocaleString()}
                 </td>
                 <td class="px-8">
                     {uploads}
