@@ -24,7 +24,6 @@ export async function load({ cookies, platform }) {
     // Get info for each key and append to array
     for (const key of keys.keys) {
         const link = JSON.parse(await kv.get(key.name))
-        link["expiration"] = key.expiration;
         link["key"] = key.name;
         links.push(link);
     }

@@ -69,7 +69,7 @@
                 <th class="px-8">Remaining uses</th>
                 <th></th>
             </tr>
-            {#each data.links as { key, comment, uploads, expiration }}
+            {#each data.links as { key, comment, uploads, expiry }}
             <tr class="border border-slate-950">
                 <td class="px-8">
                     <button on:click={copyLink}>{key}</button>
@@ -78,7 +78,7 @@
                     {comment}
                 </td>
                 <td class="px-8">
-                    {new Date(expiration * 1000).toLocaleString()}
+                    {new Date(expiry * 1000).toLocaleString()}
                 </td>
                 <td class="px-8">
                     {uploads}
