@@ -9,10 +9,13 @@
     let files;                          // selected files to upload
     let expiryDate;                     // Store selected expiration date
     export let data;                    // data from backend
+    let chunkCount = 0;                 // Total chunk count
     const debug = true;                 // Enable debug logging in console
     let uploadProgress;                 // user facing upload progress percentage
+    let chunked = false;                // Flag indicating if chunked upload is active
     let currentFile = "";               // current file being uploaded
     let uploading = false;              // upload state
+    let finishedChunks = 0;             // finished uploaded chunks
     let textCopied = false;             // Show or hide the "Copied!" message
     let uploadFinished = false;         // Set when all files finished upload
 
@@ -66,6 +69,7 @@
             // Use multipart upload if file size > chunk size
             if (file.size > chunkSize) {
                 if (debug) console.log(`File size (${file.size}) larger than chunk size (${chunkSize}), using chunked upload`);
+                chunked = true;
 
                 // Set upload action to create multipart upload
                 headers["X-Upload-Action"] = "create";
@@ -81,7 +85,7 @@
 
                 // End early if response is not Created
                 if (response.status !== 201) {
-                    console.error(`Failed to create multipart upload: ${response.data}`);
+                    alert(`Failed to create multipart upload: ${response.data}`);
                     return;
                 }
 
@@ -104,39 +108,49 @@
                 // Set up chunk list
                 while (offset < file.size) {
                     // Add chunk to list
-                    chunkList.push({ part: part, offset: offset, chunk: file.slice(offset, offset + chunkSize) });
+                    chunkList.push({ part: part, total: file.size, chunk: file.slice(offset, offset + chunkSize) });
                     offset = offset + chunkSize;    // Set new offset
                     part++;                         // Increment part number
                 }
 
+                // Set total chunk count
+                chunkCount = chunkList.length;
+
                 // Set up list of promises
                 const promiseList = chunkList.map((chunk) => {
-                    return limiter(() => axios.put(
-                        '/api/upload',
-                        chunk.chunk,
-                        {
-                            headers: {
-                                ...headers,
-                                'X-Upload-Part': chunk.part
-                            },
-                            onUploadProgress: (progressEvent) => {
-                                const { loaded } = progressEvent;
-                                console.log(`Upload on chunk ${chunk.part}: ${loaded}`);
+                    return limiter(() => {
+                        if (debug) console.log(`Uploading part ${chunk.part}`);
+                        return axios.put(
+                            '/api/upload',
+                            chunk.chunk,
+                            {
+                                headers: {
+                                    ...headers,
+                                    'X-Upload-Part': chunk.part
+                                }
                             }
-                        }
-                    ))
+                        ).then((res) => {
+                                finishedChunks++
+                                partList.push(res.data)
+                                if (debug) console.log(`Finished uploading chunk ${chunk.part}`);
+                            }
+                        );
+                    })
                 })
 
                 // Wait for all uploads to complete
-                const result = await Promise.all(promiseList);
+                const result = await Promise.allSettled(promiseList);
                 
-                // Set up parts list to finish upload
-                partList = result.map((part) => part.data);
+                // Fail if part count is incorrect
+                if(finishedChunks !== chunkCount) {
+                    alert("Upload failed.");
+                    return;
+                }
 
                 // Set upload action to complete multipart upload
                 headers["X-Upload-Action"] = "complete";
 
-                console.log(partList);
+                if (debug) console.log(partList);
 
                 // Complete multipart upload
                 response = await axios.post(
@@ -149,14 +163,19 @@
 
                 // // Error out if response is not OK
                 if (response.status !== 200) {
-                    console.error(`Failed to complete multipart upload: ${response.data}`);
+                    alert(`Failed to complete multipart upload: ${response.data}`);
                     return;
                 }
+
+                // Reset chunk count vars
+                chunkCount = 0;
+                finishedChunks = 0;
             }
 
             // File size < chunk size, send in one request
             else {
                 if (debug) console.log(`File size (${file.size}) smaller than chunk size (${chunkSize}), using single request upload`);
+                chunked = false;
 
                 // Set upload action to single request upload
                 headers["X-Upload-Action"] = "direct";
@@ -255,7 +274,11 @@
         <p>Uploading file: {currentFile}</p>
         <div class="overflow-hidden p-1 rounded-lg bg-slate-700">
             <div class="flex relative justify-center items-center h-6">
-                <div class="relative text-sm font-medium text-white">{uploadProgress}%</div>
+                {#if !chunked}
+                    <div class="relative text-sm font-medium text-white">{uploadProgress}%</div>
+                {:else}
+                    <div class="relative text-sm px-4 font-medium text-white">Uploaded {finishedChunks} out of {chunkCount} chunks</div>
+                {/if}
             </div>
         </div>
     {:else} <!-- Show share links when upload completed-->
