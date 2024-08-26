@@ -95,42 +95,51 @@
 
                 let part = 1;           // Current part number
                 let offset = 0;         // Current offset from file start
+                let progress = 0;
                 let partsList = [];     // Keep track of list of parts to complete upload 
                 let promiseList = [];   // List of ongoing upload promises
 
-                const limiter = pLimit(16);
+                // Use p-limit to run 16 chunk uploads
+                const limiter = pLimit(4);
 
                 // Main chunked upload loop
                 // Until the offset moves beyond the end of the file...
                 while (offset < file.size) {
-                    if (debug) console.log(`Uploading chunk ${part}, range ${offset} -> ${offset + chunkSize}`);
+                    // if (debug) console.log(`Uploading chunk ${part}, range ${offset} -> ${offset + chunkSize}`);
                     
                     // Set current chunk header
                     headers["X-Upload-Part"] = part;
 
                     // Upload chunk request
-                    response = await axios.put(
+                    promiseList.push(limiter(axios.put(
                         '/api/upload',
                         file.slice(offset, offset + chunkSize),
                         {
                             headers: headers,
                             onUploadProgress: (progressEvent) => {
                                 const { loaded } = progressEvent;
-                                uploadProgress = Math.floor(((offset + loaded) * 100) / file.size);
-                                if (debug) console.log(`Upload progress: ${(offset + loaded)} out of ${file.size}`);
+                                // uploadProgress = Math.floor(((offset + loaded) * 100) / file.size);
+                                if (debug) console.log(`Upload progress on chunk ${part}: ${(progress + loaded)} out of ${file.size}`);
+                                progress = progress + loaded;
                             }
                         }
-                    );
+                    ).then((res) => {
+                        if (res.status !== 200) {
+                            console.error(`Uploading file part error: ${response.data}`);
+                            return;
+                        }
 
-                    if (response.status !== 200) {
-                        console.error(`Uploading file part error: ${response.data}`);
-                        return;
-                    }
+                        // Add R2UploadedPart object to array to complete upload later
+                        partsList.push(res.data);
+                    })));
 
-                    partsList.push(response.data);  // Add R2UploadedPart object to array to complete upload later
                     offset = offset + chunkSize;    // Set new offset after upload completed
                     part++;                         // Increment part number
                 }
+
+                // Wait for all uploads to complete
+                const result = await Promise.all(promiseList);
+                console.log(result);
 
                 // Set upload action to complete multipart upload
                 headers["X-Upload-Action"] = "complete";
