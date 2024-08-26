@@ -34,7 +34,7 @@
         uploading = true;
 
         // Static vars
-        const chunkSize = 67108864;    // 64MB (in bytes)
+        const chunkSize = 67108864;     // 64MB (in bytes)
         const token = data.token;       // Auth token (from cookies)
         
         // A unified "response" variable, for API requests
