@@ -3,7 +3,8 @@
 <script>
     // Imports
     import Header from '../../components/Header.svelte';
-	import axios from 'axios';
+	import pLimit from 'p-limit';
+    import axios from 'axios';
 
     let files;                          // selected files to upload
     let expiryDate;                     // Store selected expiration date
@@ -30,7 +31,7 @@
         uploading = true;
 
         // Static vars
-        const chunkSize = 100663296;    // 96MB (in bytes)
+        const chunkSize = 67108864;    // 64MB (in bytes)
         const token = data.token;       // Auth token (from cookies)
         
         // A unified "response" variable, for API requests
@@ -95,6 +96,9 @@
                 let part = 1;           // Current part number
                 let offset = 0;         // Current offset from file start
                 let partsList = [];     // Keep track of list of parts to complete upload 
+                let promiseList = [];   // List of ongoing upload promises
+
+                const limiter = pLimit(16);
 
                 // Main chunked upload loop
                 // Until the offset moves beyond the end of the file...
