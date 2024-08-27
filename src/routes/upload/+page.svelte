@@ -174,8 +174,8 @@
 
                 // Error out if status is not Created
                 if (response.status !== 201) {
-                    console.error(`Upload failed: ${response.data}`);
-                    return;
+                    alert(`Upload failed: ${response.data}`);
+                    location.reload();
                 }
             }
         }
