@@ -193,9 +193,7 @@
     // Function to reset variables after uploads completed
     const resetPage = () => {
         if (debug) console.log("Resetting page");
-        uploadFinished = false;
-        uploading = false;
-        files = undefined;
+        location.reload();
     };
 
     const copyLink = (fileName) => {
