@@ -9,10 +9,10 @@
     let expiryDate;                     // Store selected expiration date
     export let data;                    // data from backend
     const debug = true;                 // Enable debug logging in console
-    let uploadProgress;                 // user facing upload progress percentage
     let currentFile = "";               // current file being uploaded
     let uploading = false;              // upload state
     let textCopied = false;             // Show or hide the "Copied!" message
+    let uploadProgress = 0;             // user facing upload progress percentage
     let uploadFinished = false;         // Set when all files finished upload
 
     // Function to format file sizes
