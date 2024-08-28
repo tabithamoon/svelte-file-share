@@ -84,8 +84,8 @@
 
                 // End early if response is not Created
                 if (response.status !== 201) {
-                    console.error(`Failed to create multipart upload: ${response.data}`);
-                    return;
+                    alert(`Failed to create multipart upload: ${response.data}`);
+                    location.reload();
                 }
 
                 // Discard rest of response info to simplify
@@ -109,22 +109,50 @@
                     headers["X-Upload-Part"] = part;
 
                     // Upload chunk request
-                    response = await axios.put(
-                        '/api/guest/upload',
-                        file.slice(offset, offset + chunkSize),
-                        {
-                            headers: headers,
-                            onUploadProgress: (progressEvent) => {
-                                const { loaded } = progressEvent;
-                                uploadProgress = Math.floor(((offset + loaded) * 100) / file.size);
-                                if (debug) console.log(`Upload progress: ${(offset + loaded)} out of ${file.size}`);
+                    try {
+                        response = await axios.put(
+                            '/api/guest/upload',
+                            file.slice(offset, offset + chunkSize),
+                            {
+                                headers: headers,
+                                onUploadProgress: (progressEvent) => {
+                                    const { loaded } = progressEvent;
+                                    uploadProgress = Math.floor(((offset + loaded) * 100) / file.size);
+                                    if (debug) console.log(`Upload progress: ${(offset + loaded)} out of ${file.size}`);
+                                }
                             }
-                        }
-                    );
+                        );
+                    }
+                    catch {
+                        // Cancel multipart upload
+                        headers["X-Upload-Action"] = 'cancel';
+                        await axios.post(
+                            '/api/guest/upload',
+                            null,
+                            {
+                                headers: headers
+                            }
+                        );
+
+                        // Alert user and stop execution
+                        alert(`Upload failed.`);
+                        location.reload();
+                    }
 
                     if (response.status !== 200) {
-                        console.error(`Uploading file part error: ${response.data}`);
-                        return;
+                        // Cancel multipart upload
+                        headers["X-Upload-Action"] = 'cancel';
+                        await axios.post(
+                            '/api/guest/upload',
+                            null,
+                            {
+                                headers: headers
+                            }
+                        );
+
+                        // Alert user and stop execution
+                        alert(`Upload failed.`);
+                        location.reload();
                     }
 
                     partsList.push(response.data);  // Add R2UploadedPart object to array to complete upload later
@@ -146,8 +174,19 @@
 
                 // Error out if response is not OK
                 if (response.status !== 200) {
-                    console.error(`Failed to complete multipart upload: ${response.data}`);
-                    return;
+                    alert(`Failed to complete multipart upload: ${response.data}`);
+                    
+                    // Try to cancel upload
+                    headers["X-Upload-Action"] = 'cancel';
+                    await axios.post(
+                        '/api/guest/upload',
+                        null,
+                        {
+                            headers: headers
+                        }
+                    );
+
+                    location.reload();
                 }
             }
 

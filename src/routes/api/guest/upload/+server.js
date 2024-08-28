@@ -67,6 +67,19 @@ export async function POST({ request, platform }) {
                 );
             }
         
+        case 'cancel': // Cancel a multipart upload, in case of failure
+            try {
+                const upload = await bucket.resumeMultipartUpload(command.name, command.id);
+                await upload.abort();
+                return json({ error: false, message: null });
+            }
+            catch (e) {
+                return json(
+                    { error: true, message: e },
+                    { status: 500 }
+                );
+            }
+
         case 'complete': // Complete a multipart upload
             try {
                 // Resume multipart upload
